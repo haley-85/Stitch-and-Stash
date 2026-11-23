@@ -6,7 +6,7 @@
 <title>Stitch &amp; Stash</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 /* Fog blue */
 :root{
@@ -380,14 +380,172 @@ a.btn.primary{color:var(--accent-ink)}
   nav{margin-left:0;width:100%}
   nav a{flex:1;text-align:center;padding:10px 8px;font-size:.88rem}
 }
+
+/* =================================================================
+   DESIGN: vintage granny-core with an iOS feel
+   ================================================================= */
+:root{
+  --bg:#F5EFE3; --surface:#FFFCF5; --surface-2:#EFE7D8; --ink:#3A2F27; --muted:#7B6D5F;
+  --line:#E2D6C3; --accent:#4D6B84; --accent-ink:#FFFFFF; --accent-soft:#E2EAF0;
+  --sage:#7E9A78; --butter:#E2B84A; --warn:#A8572E; --ok:#4E7A49;
+  --seam:rgba(58,47,39,.2); --shadow:0 1px 2px rgba(58,47,39,.05), 0 8px 24px rgba(58,47,39,.07);
+  --lift:0 1px 3px rgba(58,47,39,.14);
+  --r-lg:22px; --r-md:14px; --r-sm:10px;
+  --font-ui:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Figtree,system-ui,sans-serif;
+  --font-display:"Fraunces",Georgia,"Times New Roman",serif;
+  --granny:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%23FFFCF5'/%3E%3Crect x='3' y='3' width='34' height='34' rx='3' fill='none' stroke='%234D6B84' stroke-width='4' stroke-dasharray='7 2.5'/%3E%3Crect x='10.5' y='10.5' width='19' height='19' rx='2' fill='none' stroke='%23E2B84A' stroke-width='4' stroke-dasharray='5 2'/%3E%3Crect x='16.5' y='16.5' width='7' height='7' rx='1.5' fill='%237E9A78'/%3E%3C/svg%3E");
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#1C1915; --surface:#26211C; --surface-2:#312A23; --ink:#F2EADD; --muted:#B4A895;
+    --line:#40372E; --accent:#A3BDD2; --accent-ink:#13202B; --accent-soft:#2B3742;
+    --sage:#8FAE88; --butter:#E7C46A; --warn:#E39A6F; --ok:#9DCB92;
+    --seam:rgba(0,0,0,.35); --shadow:0 1px 2px rgba(0,0,0,.3); --lift:0 1px 3px rgba(0,0,0,.4); color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#1C1915; --surface:#26211C; --surface-2:#312A23; --ink:#F2EADD; --muted:#B4A895;
+  --line:#40372E; --accent:#A3BDD2; --accent-ink:#13202B; --accent-soft:#2B3742;
+  --sage:#8FAE88; --butter:#E7C46A; --warn:#E39A6F; --ok:#9DCB92;
+  --seam:rgba(0,0,0,.35); --shadow:0 1px 2px rgba(0,0,0,.3); --lift:0 1px 3px rgba(0,0,0,.4); color-scheme:dark;
+}
+body{font-family:var(--font-ui);background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
+h1,h2,h3,.yd,.tbig,.ptotal,.hooksize-h b,.hookchip b,.rowctr .num,.hitem .clock{font-family:var(--font-display);font-weight:600;letter-spacing:-.01em}
+h1{font-weight:700}
+
+/* header: frosted glass, granny-square blanket strip */
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:31;background:var(--surface)}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;border-bottom:1px solid var(--line);background:var(--surface);background:color-mix(in srgb, var(--surface) 82%, transparent);-webkit-backdrop-filter:saturate(1.6) blur(18px);backdrop-filter:saturate(1.6) blur(18px)}
+.granny-band{height:22px;background:var(--granny) repeat-x left center;background-size:22px 22px}
+.shopadd{align-items:end}
+@media (max-width:520px){ .askpanel .row2{grid-template-columns:1fr} }
+.head-in{padding:10px 20px;align-items:center;gap:10px 24px}
+.brand{display:flex;align-items:center;gap:12px}
+.brand .logo{width:42px;height:42px;flex:none;border-radius:8px;background:var(--granny) center/42px 42px;box-shadow:var(--lift);transform:rotate(-4deg)}
+.brand h1{font-size:1.55rem;line-height:1.1}
+.brand p{margin:2px 0 0;font-size:.85rem}
+nav{background:var(--surface-2);border-radius:999px;padding:4px;gap:2px;flex-wrap:nowrap}
+nav a{position:static;border:none;border-radius:999px;padding:7px 13px;font-size:.9rem;font-weight:600;color:var(--muted);background:transparent}
+nav a:hover{color:var(--ink)}
+nav a[aria-current="page"]{background:var(--surface);color:var(--ink);border:none;box-shadow:var(--lift)}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) .granny-band, :root:not([data-theme="light"]) .brand .logo{opacity:.85} }
+
+main{padding:22px 20px}
+
+/* cards: big ones get the big radius, items inside get a smaller one */
+.panel{border:none;border-radius:var(--r-lg);background:var(--surface);box-shadow:var(--shadow);padding:20px}
+.panel h2{font-size:1.32rem}
+.fcard,.opt,.scard,.dcard,.gq,.ocard,.mcard,.hooksize,.idea,.fitopt,.timerbox,.pickup,.covertool,.commit,.drop{border-radius:var(--r-md)}
+.sum,.palset,.aibox,.taken,.lowbox,.shape-help{border-radius:var(--r-md)}
+.fcard,.opt,.scard,.dcard,.gq,.idea{border-color:var(--line)}
+
+/* kanban */
+.col{background:var(--surface-2);border:none;border-radius:var(--r-lg)}
+.col.over{background:var(--accent-soft);box-shadow:inset 0 0 0 2px var(--accent)}
+.col-h{border-bottom:none}
+.wcard{background:var(--surface);border:none;border-radius:var(--r-md);box-shadow:var(--lift)}
+
+/* buttons: iOS pills */
+.btn{border:none;border-radius:999px;background:var(--accent-soft);color:var(--accent);font-weight:600;padding:9px 16px;transition:filter .15s}
+.btn:hover{border:none;filter:brightness(.96)}
+.btn:active{filter:brightness(.9)}
+.btn.primary{background:var(--accent);color:var(--accent-ink)}
+.btn.small{padding:6px 12px;font-size:.86rem}
+a.btn{color:var(--accent)} a.btn.primary{color:var(--accent-ink)}
+select.btn{padding-right:28px}
+.x{border-radius:50%}
+
+/* inputs: filled, rounded, calm focus ring */
+input[type=text],input[type=number],input[type=time],input[type=date],select,textarea{border:1px solid transparent;background:var(--surface-2);border-radius:12px;padding:10px 12px}
+input[type=text]:focus,input[type=number]:focus,input[type=time]:focus,input[type=date]:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);background:var(--surface);box-shadow:0 0 0 3px var(--accent-soft)}
+label.f{font-weight:600;color:var(--muted)}
+input[type=radio]{accent-color:var(--accent);width:18px;height:18px}
+
+/* on/off switches */
+input[type=checkbox]{-webkit-appearance:none;appearance:none;width:46px;height:28px;margin:0;border:none;border-radius:999px;background:var(--line);position:relative;cursor:pointer;flex:none;vertical-align:middle;transition:background .2s}
+input[type=checkbox]::before{content:"";position:absolute;top:2px;left:2px;width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 2px 4px rgba(0,0,0,.2);transition:transform .2s}
+input[type=checkbox]:checked{background:var(--sage)}
+input[type=checkbox]:checked::before{transform:translateX(18px)}
+input[type=checkbox]:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.shopitem input[type=checkbox]{width:24px;height:24px;border-radius:50%;background:transparent;box-shadow:inset 0 0 0 2px var(--line)}
+.shopitem input[type=checkbox]::before{display:none}
+.shopitem input[type=checkbox]:checked{background:var(--sage);box-shadow:none}
+
+/* segmented controls */
+.seg{display:inline-flex;flex-wrap:wrap;gap:2px;padding:3px;background:var(--surface-2);border-radius:12px}
+.seg .btn{background:transparent;color:var(--ink);border-radius:9px}
+.seg .btn.primary{background:var(--surface);color:var(--ink);box-shadow:var(--lift)}
+.seg.catchips{background:none;padding:0;gap:6px}
+.catchips .btn{background:var(--surface-2);border-radius:999px}
+.catchips .btn.primary{background:var(--accent);color:var(--accent-ink);box-shadow:none}
+.subnav{display:inline-flex;flex-wrap:wrap;gap:2px;padding:3px;background:var(--surface-2);border-radius:12px}
+.subnav a{border:none;background:transparent;border-radius:9px;padding:7px 14px;color:var(--ink)}
+.subnav a[aria-current]{background:var(--surface);color:var(--ink);border:none;box-shadow:var(--lift)}
+
+/* drawing tools */
+.tool{border:none;border-radius:14px;background:var(--surface-2)}
+.tool:hover{border:none;filter:brightness(.97)}
+.tool[aria-pressed="true"]{background:var(--accent-soft);box-shadow:inset 0 0 0 2px var(--accent)}
+.canvas-wrap{border-radius:var(--r-md)}
+.drop{border:2px dashed var(--line);background:var(--surface-2)}
+.drop:hover,.drop.over{border-color:var(--accent);background:var(--accent-soft)}
+
+/* warnings use rust, not the accent blue */
+.low-tag{background:var(--warn);color:#fff}
+.err,.fitmsg.bad,.st.short,.cvrow .no,.ocard small.late,.mtask small.late,.wcard small.late,.trend-bad{color:var(--warn)}
+.st.ok,.have.ok,.cvrow .ok{color:var(--ok)}
+.have.short{color:var(--warn)}
+
+/* sheets slide up from the bottom on phones */
+dialog.sheetdlg{border:none;border-radius:var(--r-lg);box-shadow:0 24px 70px rgba(0,0,0,.28)}
+dialog.sheetdlg::backdrop{background:rgba(40,32,25,.4);-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px)}
+.dlg-foot{border-top:1px solid var(--line)}
+.mslist{background:var(--surface-2);border-radius:var(--r-md);overflow:hidden}
+.mslist a{display:flex;justify-content:space-between;align-items:center;padding:15px 16px;text-decoration:none;color:var(--ink);font-weight:600;border-top:1px solid var(--line)}
+.mslist a:first-child{border-top:none}
+.mslist a b{color:var(--muted);font-weight:400;font-size:1.3rem;line-height:1}
+.mslist a.on{color:var(--accent)}
+
+/* phone tab bar */
+.tabbar{display:none}
+@media (max-width:760px){
+  nav{display:none}
+  .brand p{display:none}
+  .brand .logo{width:34px;height:34px;background-size:34px 34px}
+  .brand h1{font-size:1.35rem}
+  .head-in{padding:8px 16px}
+  .granny-band{height:14px;background-size:14px 14px}
+  main{padding:16px 14px calc(96px + env(safe-area-inset-bottom,0px))}
+  .panel{padding:16px;border-radius:20px}
+  .tabbar{display:grid;grid-template-columns:repeat(5,1fr);position:fixed;left:0;right:0;bottom:0;z-index:40;padding:6px 4px calc(6px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);background:var(--surface);background:color-mix(in srgb, var(--surface) 85%, transparent);-webkit-backdrop-filter:saturate(1.6) blur(18px);backdrop-filter:saturate(1.6) blur(18px)}
+  .tabbar a{display:flex;flex-direction:column;align-items:center;gap:2px;padding:3px 0;text-decoration:none;color:var(--muted);font-size:.66rem;font-weight:600}
+  .tabbar a svg{width:26px;height:26px}
+  .tabbar a.on{color:var(--accent)}
+  .toast{bottom:calc(90px + env(safe-area-inset-bottom,0px))}
+}
+@media (max-width:640px){
+  dialog.sheetdlg{margin:auto 0 0;width:100%;max-width:100%;max-height:92%;border-radius:22px 22px 0 0;padding-bottom:env(safe-area-inset-bottom,0px)}
+  dialog.sheetdlg[open]{animation:sheetUp .3s cubic-bezier(.2,.8,.2,1)}
+  dialog.sheetdlg .dlg-in::before{content:"";display:block;width:38px;height:5px;border-radius:3px;background:var(--line);margin:-6px auto 12px}
+}
+@keyframes sheetUp{from{transform:translateY(60px);opacity:.5}to{transform:none;opacity:1}}
+@media (prefers-reduced-motion:reduce){
+  dialog.sheetdlg[open]{animation:none}
+  input[type=checkbox],input[type=checkbox]::before,.btn{transition:none}
+}
+.toast{border-radius:999px;box-shadow:0 8px 24px rgba(0,0,0,.2);font-weight:500}
+@media print{ .tabbar,.granny-band,body::before{display:none!important} header{position:static} }
 </style>
 </head>
 <body>
 <header>
+  <div class="granny-band" aria-hidden="true"></div>
   <div class="head-in">
     <div class="brand">
-      <h1>Stitch &amp; Stash</h1>
-      <p>Plan quilts, track every project, and keep your supplies in order.</p>
+      <span class="logo" aria-hidden="true"></span>
+      <div><h1>Stitch &amp; Stash</h1>
+      <p>Plan quilts, track every project, and keep your supplies in order.</p></div>
     </div>
     <nav>
       <a href="#home" id="nav-home">Home</a>
@@ -400,7 +558,6 @@ a.btn.primary{color:var(--accent-ink)}
       <a href="#quilts" id="nav-quilts">Backing ideas</a>
     </nav>
   </div>
-  <hr class="stitch">
 </header>
 
 <main>
@@ -1134,6 +1291,25 @@ a.btn.primary{color:var(--accent-ink)}
   </div>
 </section>
 </main>
+<div class="tabbar" role="navigation" aria-label="Main">
+  <a href="#home" data-tab="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9.5h13V10"/><path d="M10 19.5v-5h4v5"/></svg><span>Home</span></a>
+  <a href="#design" data-tab="design"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 12h16M12 4v16M4 4l8 8M12 12l8 8"/></svg><span>Design</span></a>
+  <a href="#wip" data-tab="wip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 7.5V12l3 2"/></svg><span>In progress</span></a>
+  <a href="#stash" data-tab="stash"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10h16l-1.6 9.5H5.6z"/><path d="M8 10l3-6M16 10l-3-6"/><path d="M9 13.5v3M12 13.5v3M15 13.5v3"/></svg><span>Stash</span></a>
+  <a href="#" data-tab="more" id="tabMore"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="12" r="1.4" fill="currentColor"/><circle cx="12" cy="12" r="1.4" fill="currentColor"/><circle cx="18" cy="12" r="1.4" fill="currentColor"/></svg><span>More</span></a>
+</div>
+<dialog class="sheetdlg" id="moreDlg" aria-labelledby="moreTitle">
+  <div class="dlg-in">
+    <h2 id="moreTitle" style="margin-bottom:12px">More</h2>
+    <div class="mslist">
+      <a href="#done" data-v="done"><span>Finished work</span><b aria-hidden="true">›</b></a>
+      <a href="#patterns" data-v="patterns"><span>Patterns &amp; ideas</span><b aria-hidden="true">›</b></a>
+      <a href="#quilts" data-v="quilts"><span>Backing ideas</span><b aria-hidden="true">›</b></a>
+      <a href="#sell" data-v="sell" id="moreSell" hidden><span>Selling</span><b aria-hidden="true">›</b></a>
+    </div>
+    <div class="btns" style="margin-top:14px"><button class="btn" id="moreClose">Close</button></div>
+  </div>
+</dialog>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
@@ -3600,7 +3776,7 @@ try { Object.assign(PREFS, JSON.parse(localStorage.getItem("qs:prefs") || "{}"))
 let assetsCap = null;
 function applyPrefs(){
   $("#prefSell").checked = !!PREFS.selling; $("#prefKnit").checked = !!PREFS.knit;
-  $("#nav-sell").hidden = !PREFS.selling;
+  $("#nav-sell").hidden = !PREFS.selling; $("#moreSell").hidden = !PREFS.selling;
   document.querySelectorAll(".knit-only").forEach(e => e.hidden = !PREFS.knit);
   document.querySelectorAll(".sell-only").forEach(e => e.hidden = !PREFS.selling);
   if (!PREFS.knit && boardKind === "knit"){ boardKind = "quilt"; }
@@ -4241,6 +4417,25 @@ $("#askQ").addEventListener("keydown", e => { if (e.key === "Enter" && !e.shiftK
 })();
 
 /* =================================================================
+   PHONE TAB BAR + "MORE" SHEET
+   ================================================================= */
+const TAB_OF = { home:"home", design:"design", wip:"wip", stash:"stash", notions:"stash", yarn:"stash", machines:"stash", done:"more", patterns:"more", quilts:"more", sell:"more" };
+function updTabbar(v){
+  document.querySelectorAll(".tabbar [data-tab]").forEach(a => {
+    const on = a.dataset.tab === (TAB_OF[v] || "home");
+    a.classList.toggle("on", on);
+    if (on && a.dataset.tab !== "more") a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current");
+  });
+  document.querySelectorAll("#moreDlg [data-v]").forEach(a => a.classList.toggle("on", a.dataset.v === v));
+}
+const closeMore = () => { try { $("#moreDlg").close(); } catch { $("#moreDlg").removeAttribute("open"); } };
+$("#tabMore").addEventListener("click", e => { e.preventDefault(); $("#moreSell").hidden = !PREFS.selling; try { $("#moreDlg").showModal(); } catch { $("#moreDlg").setAttribute("open",""); } });
+document.querySelectorAll("#moreDlg a").forEach(a => a.addEventListener("click", closeMore));
+$("#moreClose").addEventListener("click", closeMore);
+$("#moreDlg").addEventListener("click", e => { if (e.target === $("#moreDlg")) closeMore(); });
+$("#wipDlg").addEventListener("click", e => { if (e.target === $("#wipDlg") && window.matchMedia("(max-width:640px)").matches) closeWip(); });
+
+/* =================================================================
    ROUTING + BOOT
    ================================================================= */
 const VIEWS = ["home","design","wip","done","patterns","quilts","stash","notions","yarn","machines","sell"], NAVOF = { notions:"stash", yarn:"stash", machines:"stash" };
@@ -4250,6 +4445,9 @@ function route(){
   VIEWS.forEach(n => { $("#view-"+n).hidden = n !== v; });
   document.querySelectorAll("nav a").forEach(a => { if (a.id === "nav-" + (NAVOF[v]||v)) a.setAttribute("aria-current","page"); else a.removeAttribute("aria-current"); });
   document.querySelectorAll(".subnav a").forEach(a => { if (a.getAttribute("href") === "#"+v) a.setAttribute("aria-current","page"); else a.removeAttribute("aria-current"); });
+  updTabbar(v);
+  if (route._last && route._last !== v) window.scrollTo(0, 0);
+  route._last = v;
   if (v === "home") renderHome();
   if (v === "done") renderDone();
   if (v === "sell") renderSell();
