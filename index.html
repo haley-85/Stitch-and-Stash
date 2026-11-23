@@ -371,6 +371,21 @@ a.btn.primary{color:var(--accent-ink)}
 .followups .btn{font-weight:500}
 .cam-btn{display:inline-flex;align-items:center;gap:6px;margin-top:8px}
 .cam-btn svg{width:18px;height:18px}
+
+/* block copy + stamp */
+.blockbar{margin:0 0 12px;padding:12px;border-radius:var(--r-md,14px);background:var(--surface-2)}
+.blh{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:6px}
+.blocklib{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 6px}
+.bcard{flex:none;width:84px;padding:6px;border:none;border-radius:12px;background:var(--surface);cursor:pointer;text-align:center;font-size:.76rem;font-weight:600;color:var(--ink);position:relative;box-shadow:var(--lift,0 1px 2px rgba(0,0,0,.1))}
+.bcard svg{display:block;width:72px;height:72px;margin:0 auto 4px;border-radius:6px}
+.bcard.on{box-shadow:inset 0 0 0 2px var(--accent)}
+.bcard .bx{position:absolute;top:-6px;right:-6px;width:22px;height:22px;border-radius:50%;border:none;background:var(--ink);color:var(--bg);font-size:.75rem;cursor:pointer;line-height:1}
+.stampbox{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:start;margin-top:10px;padding-top:10px;border-top:1px dashed var(--line)}
+.stampbox svg{width:96px;height:96px;border-radius:8px;display:block}
+.maprow{display:flex;align-items:center;gap:8px;margin-top:6px;font-size:.88rem}
+.maprow i{width:20px;height:20px;border-radius:5px;border:1px solid var(--seam);flex:none}
+.maprow select{width:auto;padding:5px 10px}
+.selinfo{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:8px;font-size:.92rem}
 .toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:.92rem;z-index:20;opacity:0;pointer-events:none;transition:opacity .2s}
 .toast.show{opacity:1}
 
@@ -773,11 +788,18 @@ dialog.sheetdlg::backdrop{background:rgba(40,32,25,.4);-webkit-backdrop-filter:b
           <button class="tool" data-tool="sb"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M9 3H15L21 9V15L15 21H9L3 15V9Z" fill="currentColor"/></svg><span>Snowball</span></button>
           <button class="tool" data-tool="sis"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M12 3 21 12 12 21 3 12Z" fill="currentColor"/></svg><span>Diamond</span></button>
           <button class="tool" data-tool="lc"><svg viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="2"/><rect x="7" y="7" width="10" height="10"/></g><rect x="10.5" y="10.5" width="3" height="3" fill="currentColor"/></svg><span>Log cabin</span></button>
+          <button class="tool" data-tool="sel"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-dasharray="3 2.5"/><rect x="8" y="8" width="8" height="8" fill="currentColor"/></svg><span>Copy area</span></button>
+          <button class="tool" data-tool="stamp"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6v5l3 3v3H6v-3l3-3z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M4 18h16v3H4z" fill="currentColor"/></svg><span>Stamp block</span></button>
           <span class="sep"></span>
           <button class="tool" data-tool="turn"><svg viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 12a8 8 0 1 1-3-6.2"/><path d="M20 4v5h-5"/></g></svg><span>Turn</span></button>
           <button class="tool" data-tool="pick"><svg viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m14 7 3 3"/><path d="M5 19l2-2 9.5-9.5a2.1 2.1 0 0 0-3-3L4 14l-1 4z"/></g></svg><span>Copy fabric</span></button>
         </div>
         <p class="shape-help" id="shapeHelp" aria-live="polite"></p>
+        <div class="blockbar" id="blockBar" hidden>
+          <div id="selInfo"></div>
+          <div id="blockLibWrap"><div class="blh"><b>My blocks</b><span class="hint">Tap one to stamp it</span></div><div class="blocklib" id="blockLib"></div></div>
+          <div id="stampOpts"></div>
+        </div>
         <div class="toolbar">
           <button class="btn small" id="undo">Undo</button>
           <button class="btn small" id="fillAll">Fill all with fabric</button>
@@ -1513,6 +1535,7 @@ function renderFabrics(){
       pushHistory();
       S.fabrics = S.fabrics.filter(x=>x.id!==f.id);
       S.cells.forEach(cell => cell.c = cell.c.map(id => id===f.id ? fallback : id));
+      (S.blocks||[]).forEach(b => b.cells.forEach(cell => cell.c = cell.c.map(id => id===f.id ? fallback : id)));
       S.borders.forEach(b => { if (b.f===f.id) b.f=fallback; });
       if (S.bindF===f.id) S.bindF=fallback;
       if (S.sashF===f.id) S.sashF=fallback; if (S.cornF===f.id) S.cornF=fallback;
@@ -1608,6 +1631,7 @@ function renderQuilt(){
   svg.innerHTML = out;
   $("#sizebar").innerHTML = `<span>Finished quilt <b>${inch(d.W)} × ${inch(d.H)}</b></span><span>Center <b>${inch(d.cw)} × ${inch(d.ch)}</b></span><span>${S.cols*S.rows} squares at ${inch(S.unit)} finished</span>`;
   renderFit();
+  drawSel(); renderBlockBar();
 }
 function redrawCell(i){ const g = svg.querySelector(`g[data-i="${i}"]`); if (g) g.innerHTML = cellMarkup(i); }
 
@@ -1626,6 +1650,8 @@ function hit(evt){
 function halfOf(shape,u,v){ return shape==="/" ? (u+v<1?0:1) : (u>v?0:1); }
 let stamped = new Set();
 function apply(h, first){
+  if (cur.tool === "sel"){ selUpdate(h, first); return; }
+  if (cur.tool === "stamp"){ if (first) stampAt(h); return; }
   const before = S.cells[h.i];
   applyOne(h, first);
   if (S.cells[h.i] !== before && S.repeat && (S.bs||1) > 1) mirrorBlock(h.i);
@@ -1684,7 +1710,7 @@ svg.addEventListener("pointerdown", e => {
   e.preventDefault(); pushHistory(); painting = true; stamped = new Set(); svg.setPointerCapture(e.pointerId); apply(h, true);
 });
 svg.addEventListener("pointermove", e => { if (!painting || cur.tool==="turn" || cur.tool==="pick") return; const h = hit(e); if (h) apply(h, false); });
-const endPaint = () => { if (!painting) return; painting=false; renderCut(); saveLocal(); };
+const endPaint = () => { if (!painting) return; painting=false; if (cur.tool === "sel") selDone(); renderCut(); saveLocal(); };
 svg.addEventListener("pointerup", endPaint); svg.addEventListener("pointercancel", endPaint);
 
 /* ---- cut list math ---- */
@@ -1916,12 +1942,15 @@ const HELP = {
   "sis": "Diamond: a diamond inside the square with triangles in the corners. Also called square in a square.",
   "lc":  "Log cabin: a whole block of strips (logs) built around a center square. Click an empty square to place one, then click any strip to change its fabric.",
   "turn":"Turn: click a shape on the quilt to give it a quarter turn.",
-  "pick":"Copy fabric: click anywhere on the quilt to pick up that fabric and paint with it."
+  "pick":"Copy fabric: click anywhere on the quilt to pick up that fabric and paint with it.",
+  "sel":"Copy area: drag across the squares you want to reuse (or tap one block if you’ve set blocks), then tap “Save as a block.”",
+  "stamp":"Stamp block: tap the quilt to place your chosen block. Use the buttons below to turn it, swap its light and dark, or fill the whole quilt."
 };
 function setTool(t){
   cur.tool = t;
   document.querySelectorAll(".tool").forEach(x=>x.setAttribute("aria-pressed", String(x.dataset.tool===t)));
   $("#shapeHelp").textContent = HELP[t] || "";
+  if (typeof renderBlockBar === "function") renderBlockBar();
   updLcVis();
 }
 document.querySelectorAll(".tool").forEach(b => b.addEventListener("click", () => setTool(b.dataset.tool)));
@@ -4435,6 +4464,156 @@ $("#moreClose").addEventListener("click", closeMore);
 $("#moreDlg").addEventListener("click", e => { if (e.target === $("#moreDlg")) closeMore(); });
 $("#wipDlg").addEventListener("click", e => { if (e.target === $("#wipDlg") && window.matchMedia("(max-width:640px)").matches) closeWip(); });
 
+/* =================================================================
+   COPY A BLOCK, THEN STAMP IT
+   ================================================================= */
+let SEL = null, selStart = null, STAMP = null;
+function cellShape(cell, x, y, u){
+  const poly = (pts, col) => `<polygon points="${pts.map(p=>p.join(",")).join(" ")}" fill="${col}" stroke="${col}" stroke-width="${u*0.02}"/>`;
+  const C = id => colorOf(id);
+  if (cell.s==="sq") return `<rect x="${x}" y="${y}" width="${u}" height="${u}" fill="${C(cell.c[0])}"/>`;
+  if (cell.s==="x"){ const cx=x+u/2, cy=y+u/2; return poly([[x,y],[x+u,y],[cx,cy]],C(cell.c[0]))+poly([[x+u,y],[x+u,y+u],[cx,cy]],C(cell.c[1]))+poly([[x+u,y+u],[x,y+u],[cx,cy]],C(cell.c[2]))+poly([[x,y+u],[x,y],[cx,cy]],C(cell.c[3])); }
+  if (cell.s==="lc"){ const n=2*cell.r+1, k=u/n; return lcGeom(cell.r).map((g,j)=>{ const R=rotRect(g,n,cell.rot); return `<rect x="${x+R.x*k}" y="${y+R.y*k}" width="${R.w*k}" height="${R.h*k}" fill="${C(cell.c[j])}"/>`; }).join(""); }
+  if (SHAPES[cell.s]) return SHAPES[cell.s].parts.map((pts,j)=>poly(pts.map(p=>{ const [a,b]=rotPt(p,cell.rot); return [x+a*u,y+b*u]; }), C(cell.c[j]))).join("");
+  if (cell.s==="/") return poly([[x,y],[x+u,y],[x,y+u]],C(cell.c[0]))+poly([[x+u,y],[x+u,y+u],[x,y+u]],C(cell.c[1]));
+  return poly([[x,y],[x+u,y],[x+u,y+u]],C(cell.c[0]))+poly([[x,y],[x+u,y+u],[x,y+u]],C(cell.c[1]));
+}
+function blockSvg(b){
+  const u = 10, W = b.w*u, H = b.h*u;
+  let m = "";
+  b.cells.forEach((cell, i) => { const r = Math.floor(i/b.w), c = i % b.w; m += cellShape(cell, c*u, r*u, u); });
+  return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" aria-hidden="true">${m}</svg>`;
+}
+function turnCell(cell){
+  if (cell.s==="sq") return { s:"sq", c:[...cell.c] };
+  if (cell.s==="x") return { s:"x", c:[cell.c[3],cell.c[0],cell.c[1],cell.c[2]] };
+  if (cell.s==="lc" || SHAPES[cell.s]) return { ...cell, c:[...cell.c], rot:((cell.rot||0)+1)%4 };
+  return cell.s==="/" ? { s:"\\", c:[cell.c[0],cell.c[1]] } : { s:"/", c:[cell.c[1],cell.c[0]] };
+}
+function turnBlock(b){
+  const out = { ...b, w:b.h, h:b.w, cells:new Array(b.w*b.h) };
+  for (let r=0;r<out.h;r++) for (let c=0;c<out.w;c++) out.cells[r*out.w+c] = turnCell(b.cells[(b.h-1-c)*b.w + r]);
+  return out;
+}
+const blockFabrics = b => { const n = {}; b.cells.forEach(cell => cell.c.forEach(id => n[id] = (n[id]||0)+1)); return Object.keys(n).sort((a,b2)=>n[b2]-n[a]); };
+function variant(swap){
+  const base = (S.blocks||[]).find(b=>b.id===STAMP?.id); if (!base) return null;
+  let b = JSON.parse(JSON.stringify(base));
+  for (let k=0;k<(STAMP.rot||0);k++) b = turnBlock(b);
+  const map = { ...(STAMP.map||{}) };
+  b.cells.forEach(cell => cell.c = cell.c.map(id => map[id] || id));
+  if (swap){ const f = blockFabrics(b); if (f.length >= 2){ const [a, z] = f; b.cells.forEach(cell => cell.c = cell.c.map(id => id===a ? z : id===z ? a : id)); } }
+  return b;
+}
+function placeBlock(b, r0, c0){
+  for (let r=0;r<b.h;r++) for (let c=0;c<b.w;c++){
+    const R = r0+r, Cc = c0+c; if (R<0 || Cc<0 || R>=S.rows || Cc>=S.cols) continue;
+    const i = R*S.cols+Cc; S.cells[i] = JSON.parse(JSON.stringify(b.cells[r*b.w+c])); redrawCell(i);
+  }
+}
+function snapOrigin(b, r, c){
+  const bs = S.bs||1;
+  if (bs > 1 && b.w % bs === 0 && b.h % bs === 0) return [Math.floor(r/bs)*bs, Math.floor(c/bs)*bs];
+  return [r, c];
+}
+function stampAt(h){
+  const b = variant(false); if (!b) return toast("Pick a saved block first.");
+  const r = Math.floor(h.i/S.cols), c = h.i % S.cols, [r0, c0] = snapOrigin(b, r, c);
+  placeBlock(b, r0, c0);
+}
+function fillWith(alt){
+  const b0 = variant(false); if (!b0) return;
+  const b1 = alt ? variant(true) : b0;
+  pushHistory();
+  let k = 0;
+  for (let R=0, bi=0; R<S.rows; R+=b0.h, bi++) for (let C=0, bj=0; C<S.cols; C+=b0.w, bj++){ placeBlock((bi+bj)%2 ? b1 : b0, R, C); k++; }
+  renderCut(); saveLocal();
+  toast(alt ? "Filled, alternating light and dark" : "Filled the quilt with your block");
+}
+/* selecting an area */
+function selUpdate(h, first){
+  const r = Math.floor(h.i/S.cols), c = h.i % S.cols;
+  if (first) selStart = { r, c };
+  const bs = S.bs||1;
+  let r0 = Math.min(selStart.r, r), r1 = Math.max(selStart.r, r), c0 = Math.min(selStart.c, c), c1 = Math.max(selStart.c, c);
+  if (bs > 1){ r0 = Math.floor(r0/bs)*bs; c0 = Math.floor(c0/bs)*bs; r1 = Math.min(S.rows-1, Math.floor(r1/bs)*bs + bs-1); c1 = Math.min(S.cols-1, Math.floor(c1/bs)*bs + bs-1); }
+  SEL = { r0, c0, r1, c1 }; drawSel();
+}
+function selDone(){ renderBlockBar(); }
+function drawSel(){
+  const old = svg.querySelector("#selRect"); if (old) old.remove();
+  if (!SEL || cur.tool !== "sel") return;
+  const d = dims(), x0 = d.bw + cellOff(SEL.c0, d), y0 = d.bw + cellOff(SEL.r0, d), x1 = d.bw + cellOff(SEL.c1, d) + S.unit, y1 = d.bw + cellOff(SEL.r1, d) + S.unit;
+  svg.insertAdjacentHTML("beforeend", `<rect id="selRect" x="${x0}" y="${y0}" width="${x1-x0}" height="${y1-y0}" fill="rgba(77,107,132,.18)" stroke="#4D6B84" stroke-width="3" stroke-dasharray="8 5" vector-effect="non-scaling-stroke" style="pointer-events:none"/>`);
+}
+function saveSelection(){
+  if (!SEL) return;
+  const w = SEL.c1 - SEL.c0 + 1, hgt = SEL.r1 - SEL.r0 + 1, cells = [];
+  for (let r=SEL.r0; r<=SEL.r1; r++) for (let c=SEL.c0; c<=SEL.c1; c++) cells.push(JSON.parse(JSON.stringify(S.cells[r*S.cols+c])));
+  S.blocks = S.blocks || [];
+  const name = (prompt("Name this block", `Block ${S.blocks.length+1}`) || "").trim() || `Block ${S.blocks.length+1}`;
+  const b = { id:uid(), name, w, h:hgt, cells };
+  S.blocks.push(b); SEL = null;
+  STAMP = { id:b.id, rot:0, map:{} };
+  saveLocal(); setTool("stamp"); renderQuilt();
+  toast(`Saved “${name}”. Tap the quilt to stamp it.`);
+}
+function renderBlockBar(){
+  const bar = $("#blockBar"); if (!bar) return;
+  const blocks = S.blocks || [];
+  if (STAMP && !blocks.some(b=>b.id===STAMP.id)) STAMP = null;
+  if (cur.tool === "stamp" && !STAMP && blocks[0]) STAMP = { id:blocks[0].id, rot:0, map:{} };
+  const show = cur.tool === "sel" || cur.tool === "stamp" || blocks.length > 0;
+  bar.hidden = !show;
+  if (!show) return;
+  // selection actions
+  const si = $("#selInfo");
+  if (cur.tool === "sel"){
+    si.innerHTML = SEL
+      ? `<div class="selinfo"><span>${SEL.c1-SEL.c0+1} × ${SEL.r1-SEL.r0+1} squares selected</span><button class="btn small primary" id="selSave">Save as a block</button><button class="btn small" id="selClear">Clear</button></div>`
+      : `<div class="selinfo"><span class="hint" style="margin:0">Drag across the squares you want to copy${(S.bs||1)>1 ? ", or tap a block" : ""}.</span></div>`;
+    if (SEL){ $("#selSave").onclick = saveSelection; $("#selClear").onclick = () => { SEL = null; drawSel(); renderBlockBar(); }; }
+  } else si.innerHTML = "";
+  // library
+  $("#blockLibWrap").hidden = !blocks.length;
+  const lib = $("#blockLib"); lib.innerHTML = "";
+  blocks.forEach(b => {
+    const card = document.createElement("button"); card.className = "bcard" + (STAMP?.id===b.id && cur.tool==="stamp" ? " on" : "");
+    card.innerHTML = `${blockSvg(b)}<span></span><span class="bx" role="button" aria-label="Delete block">×</span>`;
+    card.querySelector("span").textContent = b.name;
+    card.onclick = e => {
+      if (e.target.closest(".bx")){ e.stopPropagation(); if (!confirm(`Delete the block “${b.name}”? Squares already on the quilt stay.`)) return; S.blocks = S.blocks.filter(x=>x.id!==b.id); saveLocal(); renderBlockBar(); return; }
+      STAMP = { id:b.id, rot:0, map:{} }; setTool("stamp");
+    };
+    lib.appendChild(card);
+  });
+  // stamp options
+  const so = $("#stampOpts");
+  if (cur.tool !== "stamp" || !STAMP){ so.innerHTML = blocks.length ? "" : (cur.tool==="stamp" ? `<p class="hint">No saved blocks yet. Use “Copy area” to save one.</p>` : ""); return; }
+  const v = variant(false), base = blocks.find(b=>b.id===STAMP.id), fabs = blockFabrics(base);
+  so.innerHTML = `<div class="stampbox"><div>${blockSvg(v)}</div><div>
+      <div class="btns"><button class="btn small" id="stTurn">Turn</button><button class="btn small" id="stSwap">Swap light and dark</button><button class="btn small" id="stReset">Original colors</button></div>
+      <div id="stMap"></div>
+      <div class="btns" style="margin-top:10px"><button class="btn small primary" id="stFill">Fill the whole quilt</button><button class="btn small" id="stAlt">Fill, alternating light and dark</button></div>
+    </div></div>`;
+  const mapBox = $("#stMap");
+  fabs.forEach(id => {
+    const row = document.createElement("div"); row.className = "maprow";
+    row.innerHTML = `<i style="background:${colorOf(id)}"></i><span></span><span class="hint" style="margin:0">becomes</span><select aria-label="Replacement fabric">${fabOptions(STAMP.map[id] || id)}</select>`;
+    row.querySelector("span").textContent = fabById(id).name;
+    row.querySelector("select").onchange = e => { STAMP.map[id] = e.target.value; renderBlockBar(); };
+    mapBox.appendChild(row);
+  });
+  $("#stTurn").onclick = () => { STAMP.rot = ((STAMP.rot||0)+1)%4; renderBlockBar(); };
+  $("#stSwap").onclick = () => {
+    if (fabs.length < 2) return toast("This block has only one fabric.");
+    const a = fabs[0], z = fabs[1], ma = STAMP.map[a] || a, mz = STAMP.map[z] || z;
+    STAMP.map[a] = mz; STAMP.map[z] = ma; renderBlockBar();
+  };
+  $("#stReset").onclick = () => { STAMP.map = {}; renderBlockBar(); };
+  $("#stFill").onclick = () => fillWith(false);
+  $("#stAlt").onclick = () => fillWith(true);
+}
 /* =================================================================
    ROUTING + BOOT
    ================================================================= */
